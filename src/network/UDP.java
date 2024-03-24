@@ -60,7 +60,7 @@ public class UDP {
     public void stop() {
         if (socket != null && !socket.isClosed())
             socket.close();
-        System.out.println("Stopped!");
+        System.out.println("Stopped! Exiting...");
     }
 }
 

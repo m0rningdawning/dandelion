@@ -74,7 +74,11 @@ public class Main {
 //                    }
                         }
                         break;
-                    } else {
+                    } else if (input.equals("q") || input.equals("Q")){
+                        System.out.println("Exiting...");
+                        break;
+                    }
+                    else {
                         System.out.println("Please choose one of the given protocols!");
                     }
                 }
