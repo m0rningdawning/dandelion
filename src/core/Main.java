@@ -51,17 +51,19 @@ public class Main {
         Thread inputThread = new Thread(() -> {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             try {
-                String input = reader.readLine();
-                if (input.equals("1") || input.isEmpty()) {
-                    udp = new UDP();
-                    // Here would go other protocols
-                } else if (input.equals("2") || input.equals("3")) {
-                    System.out.println("Those are unimplemented, choose other.");
-                } else {
-                    if (udp != null){
-                        udp.stop();
-                        udp = null;
-                    }
+                while (true) {
+                    String input = reader.readLine();
+                    if (input.trim().matches("[1-3]")) {
+                        if (input.equals("1")) {
+                            udp = new UDP();
+                            // Here would go other protocols
+                        } else if (input.equals("2") || input.equals("3")) {
+                            System.out.println("This one is unimplemented, choose other.");
+                        } else {
+                            if (udp != null) {
+                                udp.stop();
+                                udp = null;
+                            }
 //                    else if (tcp != null){
 //                        tcp.stop();
 //                        tcp = null;
@@ -70,6 +72,11 @@ public class Main {
 //                        ftp.stop();
 //                        ftp = null;
 //                    }
+                        }
+                        break;
+                    } else {
+                        System.out.println("Please choose one of the given protocols!");
+                    }
                 }
             } catch (IOException e) {
                 System.out.println("Within \"initiate\" method, Main.java: " + e.getMessage());
