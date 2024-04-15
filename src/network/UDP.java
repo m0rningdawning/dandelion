@@ -51,6 +51,7 @@ public class UDP {
                 System.out.println("Finished! Press 'q' to exit.");
             } catch (IOException | InterruptedException e) {
                 System.out.println("Within \"start\" method, UDP.java: " + e.getMessage());
+                e.printStackTrace();
                 System.out.println("Implement a proper error handling procedure. E.g (If error occurred -> ask user if he wants to retry connection.)");
             }
         });
