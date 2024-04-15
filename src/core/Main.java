@@ -42,7 +42,7 @@ public class Main {
     private void printInfo() {
         System.out.println("List of protocols:\n" +
                 "1 - UDP/IP\n" +
-                "2 - TCP/IP(WIP)\n" +
+                "2 - TCP/IP\n" +
                 "3 - FTP(WIP)");
         System.out.println("Choose the protocol: ");
     }
@@ -56,18 +56,20 @@ public class Main {
                     if (input.trim().matches("[1-3]")) {
                         if (input.equals("1")) {
                             udp = new UDP();
-                            // Here would go other protocols
-                        } else if (input.equals("2") || input.equals("3")) {
+                        }
+                        else if (input.equals("2")){
+                            tcp = new TCP();
+                        }
+                        else if (input.equals("3")) {
                             System.out.println("This one is unimplemented, choose other.");
                         } else {
                             if (udp != null) {
                                 udp.stop();
                                 udp = null;
+                            } else if (tcp != null) {
+                                tcp.stop();
+                                tcp = null;
                             }
-//                    else if (tcp != null){
-//                        tcp.stop();
-//                        tcp = null;
-//                    }
 //                    else if (ftp != null){
 //                        ftp.stop();
 //                        ftp = null;

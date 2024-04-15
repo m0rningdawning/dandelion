@@ -11,14 +11,14 @@ public class TCP {
     /*public static void main(String[] args) {
         System.out.println("Still uncooked");
     }*/
-    public static Socket ClientSocket;
+    private final int TARGET_PORT = 8888;
+    public static Socket socket;
 
-    public TCP(final int ServerPort) {
-        try
-        {
-            InetAddress TargetAddress = InetAddress.getLocalHost();
-            ClientSocket = new Socket(TargetAddress,ServerPort);
-            System.out.println("TCP port " + ServerPort);
+    public TCP() {
+        try {
+            InetAddress targetAddress = InetAddress.getLocalHost();
+            socket = new Socket(targetAddress, TARGET_PORT);
+            System.out.println("TCP port " + TARGET_PORT);
 
             Thread inputThread = new Thread(() -> {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -45,8 +45,8 @@ public class TCP {
         Thread senderThread = new Thread(() -> {
             try {
                 for (int i = 0; i < 10; i++) {
-                    PrintWriter outToServer = new PrintWriter(ClientSocket.getOutputStream(), true);
-                    String data = "LOL there is more coming , get rekt";
+                    PrintWriter outToServer = new PrintWriter(socket.getOutputStream(), true);
+                    String data = "Another package";
                     outToServer.println(data);
 
                     System.out.println("Packet " + i);
@@ -63,13 +63,10 @@ public class TCP {
     }
 
     public void stop() {
-        if (ClientSocket != null && !ClientSocket.isClosed())
-        {
-            try
-            {
-                ClientSocket.close();
-            } catch (IOException e)
-            {
+        if (socket != null && !socket.isClosed()) {
+            try {
+                socket.close();
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }

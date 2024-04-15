@@ -4,13 +4,13 @@ import java.io.*;
 import java.net.*;
 
 public class UDP {
-    private final int SERVER_PORT = 9999;
+    private final int PORT = 9999;
     private static DatagramSocket socket;
 
     public UDP() {
         try {
-            socket = new DatagramSocket(SERVER_PORT);
-            System.out.println("UDP port " + SERVER_PORT);
+            socket = new DatagramSocket(PORT);
+            System.out.println("UDP port " + PORT);
 
             Thread inputThread = new Thread(() -> {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -45,7 +45,7 @@ public class UDP {
                     byte[] sendData = message.getBytes();
                     DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, targetAddress, targetPort);
                     socket.send(sendPacket);
-                    System.out.println("Sent to client: " + message);
+                    System.out.println("Sent: " + message);
                     Thread.sleep(500); // Just to be safe XD
                 }
                 System.out.println("Finished! Press 'q' to exit.");
