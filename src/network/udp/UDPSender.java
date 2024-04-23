@@ -4,6 +4,8 @@ import java.io.*;
 import java.net.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class UDPSender {
     private final int PORT = 9999;
@@ -12,6 +14,8 @@ public class UDPSender {
     private static int threadCount = 10;
     private static int delay = 1;
     private static int timeout = 10;
+
+    private static final Logger logger = Logger.getLogger(UDPSender.class.getName());
 
     public UDPSender() {
         try {
@@ -30,20 +34,22 @@ public class UDPSender {
                         }
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.log(Level.SEVERE, "Error within the UDPSender main thread ", e);
                 }
             });
             inputThread.start();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error within the UDPSender constructor ", e);
         }
     }
 
     private static void initializeThreadPool() {
-        try (ExecutorService executor = Executors.newFixedThreadPool(threadCount)) {
-            for (int i = 0; i < threadCount; i++)
-                executor.execute(new UDPSenderTask(socket, packetsCount, delay, timeout));
-        }
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+
+        for (int i = 0; i < threadCount; i++)
+            executor.execute(new UDPSenderTask(socket, packetsCount, delay, timeout));
+
+        executor.shutdown();
     }
 
     public void stop() {

@@ -5,6 +5,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class UDPSenderTask implements Runnable {
     private final DatagramSocket socket;
@@ -12,6 +14,8 @@ public class UDPSenderTask implements Runnable {
     private final int delay;
     private final int timeout;
     private int count = 0;
+
+    private static final Logger logger = Logger.getLogger(UDPSenderTask.class.getName());
 
     UDPSenderTask(DatagramSocket socket, int packetsCount, int delay, int timeout) {
         this.socket = socket;
@@ -63,7 +67,7 @@ public class UDPSenderTask implements Runnable {
             System.out.println("Finished! Press 'q' to exit.");
         } catch (IOException e) {
             System.out.println("Within \"start\" method, UDP.java: " + e.getMessage());
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Within \"start\" method, UDP.java: ", e);
             System.out.println("Implement a proper error handling procedure. E.g (If error occurred -> ask user if he wants to retry connection.)");
         }
     }
