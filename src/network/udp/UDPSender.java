@@ -17,6 +17,8 @@ public class UDPSender {
     private static int delay = 1;
     private static int timeout = 30;
 
+    private static ExecutorService executor;
+
     private static final Logger logger = Logger.getLogger(UDPSender.class.getName());
 
     public UDPSender() {
@@ -47,7 +49,7 @@ public class UDPSender {
     }
 
     private static void initializeThreadPool() {
-        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+        executor = Executors.newFixedThreadPool(threadCount);
 
         for (int i = 0; i < threadCount; i++)
             executor.execute(new UDPSenderTask(socket, PORT, packetsCount, delay, timeout));
@@ -58,6 +60,8 @@ public class UDPSender {
 
 
     public void stop() {
+        if (executor != null)
+            executor.shutdownNow();
         if (socket != null && !socket.isClosed())
             socket.close();
         System.out.println("Stopped! Exiting...");

@@ -105,7 +105,7 @@ public class UDPSenderTask implements Runnable {
             byte[] sendData = message.getBytes();
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, targetAddress, TARGET_PORT);
             socket.send(sendPacket);
-            System.out.println("Sent: " + message);
+//            System.out.println("Sent: " + message);
 //            Thread.sleep(delay); // Just to be safe XD
 //            }
 //            System.out.println("Finished! Press 'q' to exit.");
