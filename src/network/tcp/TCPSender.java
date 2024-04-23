@@ -1,4 +1,4 @@
-package network;
+package network.tcp;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,14 +7,14 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 
-public class TCP {
+public class TCPSender {
     /*public static void main(String[] args) {
         System.out.println("Still uncooked");
     }*/
     private final int TARGET_PORT = 8888;
     public static Socket socket;
 
-    public TCP() {
+    public TCPSender() {
         try {
             InetAddress targetAddress = InetAddress.getLocalHost();
             socket = new Socket(targetAddress, TARGET_PORT);

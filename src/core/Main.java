@@ -7,16 +7,16 @@ TODO
 - Implement FTP protocol
  */
 
-import network.TCP;
-import network.UDP;
+import network.tcp.TCPSender;
+import network.udp.UDPSender;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class Main {
-    private UDP udp;
-    private TCP tcp;
+    private UDPSender udpSender;
+    private TCPSender tcpSender;
 //    private FTP ftp;
 
     private Main() {
@@ -55,20 +55,20 @@ public class Main {
                     String input = reader.readLine();
                     if (input.trim().matches("[1-3]")) {
                         if (input.equals("1")) {
-                            udp = new UDP();
+                            udpSender = new UDPSender();
                         }
                         else if (input.equals("2")){
-                            tcp = new TCP();
+                            tcpSender = new TCPSender();
                         }
                         else if (input.equals("3")) {
                             System.out.println("This one is unimplemented, choose other.");
                         } else {
-                            if (udp != null) {
-                                udp.stop();
-                                udp = null;
-                            } else if (tcp != null) {
-                                tcp.stop();
-                                tcp = null;
+                            if (udpSender != null) {
+                                udpSender.stop();
+                                udpSender = null;
+                            } else if (tcpSender != null) {
+                                tcpSender.stop();
+                                tcpSender = null;
                             }
 //                    else if (ftp != null){
 //                        ftp.stop();
