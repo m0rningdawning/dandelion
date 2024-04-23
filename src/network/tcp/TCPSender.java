@@ -1,18 +1,21 @@
 package network.tcp;
 
+import network.udp.UDPSender;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TCPSender {
-    /*public static void main(String[] args) {
-        System.out.println("Still uncooked");
-    }*/
     private final int TARGET_PORT = 8888;
     public static Socket socket;
+
+    private static final Logger logger = Logger.getLogger(TCPSender.class.getName());
 
     public TCPSender() {
         try {
@@ -32,12 +35,12 @@ public class TCPSender {
                         }
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.log(Level.SEVERE, "Error within the TCPSender main thread ", e);
                 }
             });
             inputThread.start();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error within the TCPSender constructor ", e);
         }
     }
 
@@ -55,7 +58,7 @@ public class TCPSender {
                 System.out.println("Finished! Press 'q' to exit.");
             } catch (IOException | InterruptedException e) {
                 System.out.println("Within \"start\" method, TCP.java: " + e.getMessage());
-                e.printStackTrace();
+                logger.log(Level.SEVERE, "Error within the TCPSender \"start()\" thread ", e);
                 System.out.println("Implement a proper error handling procedure. E.g (If error occurred -> ask user if he wants to retry connection.)");
             }
         });
