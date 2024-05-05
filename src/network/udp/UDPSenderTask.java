@@ -10,22 +10,22 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class UDPSenderTask implements Runnable {
-    private final DatagramSocket socket;
     private final int threadNum;
-    private final int port;
+//    private final int port;
     private final int targetPort;
-    private final int packetsCount;
+//    private final int packetsCount;
     private final int timeout;
     private final CountDownLatch latch;
+    private final DatagramSocket socket;
     private int count;
 
     private static final Logger logger = Logger.getLogger(UDPSenderTask.class.getName());
 
     UDPSenderTask(int threadNum, int port, int targetPort, int packetsCount, int timeout, CountDownLatch latch) throws SocketException {
         this.threadNum = threadNum;
-        this.port = port;
+//        this.port = port;
         this.targetPort = targetPort;
-        this.packetsCount = packetsCount;
+//        this.packetsCount = packetsCount;
         this.timeout = timeout;
         this.latch = latch;
         this.count = 0;
@@ -117,8 +117,8 @@ public class UDPSenderTask implements Runnable {
 //            }
 //            System.out.println("Finished! Press 'q' to exit.");
         } catch (IOException e) {
-            System.out.println("Within \"start\" method, UDP.java: " + e.getMessage());
-            logger.log(Level.SEVERE, "Within \"start\" method, UDP.java: ", e);
+            System.out.println("Within \"send\" method, UDPSenderTask.java: " + e.getMessage());
+            logger.log(Level.SEVERE, "Within \"send\" method, UDPSenderTask.java: ", e);
             System.out.println("Implement a proper error handling procedure. E.g (If error occurred -> ask user if he wants to retry connection.)");
         }
     }

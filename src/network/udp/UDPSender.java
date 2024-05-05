@@ -75,7 +75,7 @@ public class UDPSender {
     }
 
     private void printFinish(){
-        System.out.println("Attack finished!");
+        System.out.println("UDP Attack finished!");
     }
 
     public void stop() {

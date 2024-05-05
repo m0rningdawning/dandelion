@@ -48,7 +48,7 @@ public class Main {
         System.out.println("List of protocols:\n" +
                 "1 - UDP/IP Resource exhaustion.\n" +
                 "2 - TCP/IP Test.\n" +
-                "3 - SYN-ACK Flood.\n" +
+                "3 - SYN Flood.\n" +
                 "4 - FTP(WIP)");
         System.out.println("Choose the protocol: ");
     }
@@ -68,7 +68,7 @@ public class Main {
                                 tcpSender = new TCPSender();
                                 break;
                             case "3":
-                                synSender = new SYNSender(8888, 9999, 100000, 50, 30);
+                                synSender = new SYNSender(8888, 9999, 20, 50, 30);
                                 break;
                             case "4":
                                 System.out.println("This one is unimplemented, choose other.");
