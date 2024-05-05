@@ -8,6 +8,7 @@ TODO
 - Implement FTP protocol
  */
 
+import network.syn.SYNSender;
 import network.tcp.TCPSender;
 import network.udp.UDPSender;
 
@@ -20,6 +21,7 @@ import java.util.logging.Logger;
 public class Main {
     private UDPSender udpSender;
     private TCPSender tcpSender;
+    private SYNSender synSender;
 //    private FTP ftp;
 
     private static final Logger logger = Logger.getLogger(Main.class.getName());
@@ -44,9 +46,10 @@ public class Main {
 
     private void printInfo() {
         System.out.println("List of protocols:\n" +
-                "1 - UDP/IP\n" +
-                "2 - TCP/IP\n" +
-                "3 - FTP(WIP)");
+                "1 - UDP/IP Resource exhaustion.\n" +
+                "2 - TCP/IP Test.\n" +
+                "3 - SYN-ACK Flood.\n" +
+                "4 - FTP(WIP)");
         System.out.println("Choose the protocol: ");
     }
 
@@ -59,14 +62,18 @@ public class Main {
                     if (input.trim().matches("[1-3]")) {
                         switch (input) {
                             case "1":
-                                udpSender = new UDPSender();
+                                udpSender = new UDPSender(8888, 9999, 100000, 50, 30);
                                 break;
                             case "2":
                                 tcpSender = new TCPSender();
                                 break;
                             case "3":
+                                synSender = new SYNSender(8888, 9999, 100000, 50, 30);
+                                break;
+                            case "4":
                                 System.out.println("This one is unimplemented, choose other.");
                                 break;
+
                             default:
                                 if (udpSender != null) {
                                     udpSender.stop();
@@ -74,6 +81,9 @@ public class Main {
                                 } else if (tcpSender != null) {
                                     tcpSender.stop();
                                     tcpSender = null;
+                                } else if (synSender != null) {
+                                    synSender.stop();
+                                    synSender = null;
                                 }
 //                    else if (ftp != null){
 //                        ftp.stop();

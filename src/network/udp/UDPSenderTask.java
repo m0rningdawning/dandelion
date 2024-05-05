@@ -4,27 +4,33 @@ import java.io.IOException;
 import java.net.*;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class UDPSenderTask implements Runnable {
     private final DatagramSocket socket;
+    private final int threadNum;
     private final int port;
-    private static final int TARGET_PORT = 8888;
+    private final int targetPort;
     private final int packetsCount;
-    private final int delay;
     private final int timeout;
-    private int count = 0;
+    private final CountDownLatch latch;
+    private int count;
 
     private static final Logger logger = Logger.getLogger(UDPSenderTask.class.getName());
 
-    UDPSenderTask(DatagramSocket socket, int port, int packetsCount, int delay, int timeout) {
+    UDPSenderTask(int threadNum, int port, int targetPort, int packetsCount, int timeout, CountDownLatch latch) throws SocketException {
+        this.threadNum = threadNum;
         this.port = port;
-        this.socket = socket;
+        this.targetPort = targetPort;
         this.packetsCount = packetsCount;
-        this.delay = delay;
         this.timeout = timeout;
+        this.latch = latch;
+        this.count = 0;
+
+        this.socket = new DatagramSocket(port);
     }
 
     @Override
@@ -59,19 +65,20 @@ public class UDPSenderTask implements Runnable {
 
             if (System.nanoTime() - startingTime > TimeUnit.SECONDS.toNanos(timeout)) {
                 System.out.println("Thread " + Thread.currentThread().getName() + " timed out.");
+                latch.countDown();
                 break;
             }
         }
     }
 
-    private static boolean checkForConnection(InetAddress ipAddress, int port) {
+    private boolean checkForConnection(InetAddress ipAddress, int port) {
         boolean isReached = false;
         boolean isReceived = false;
 
         try (DatagramSocket socket = new DatagramSocket()) {
             socket.setSoTimeout(10000);
             byte[] sendData = ("127.0.0.1" + ":" + port).getBytes();
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress, TARGET_PORT);
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress, targetPort);
             socket.send(sendPacket);
 
             byte[] receiveData = new byte[1024];
@@ -101,9 +108,9 @@ public class UDPSenderTask implements Runnable {
             // Everything local for now
             InetAddress targetAddress = InetAddress.getLocalHost();
 //            for (int j = 0; j < packetsCount; j++) {
-            String message = "Packet " + count++;
+            String message = "Thread number: " + threadNum + " Packet " + count++;
             byte[] sendData = message.getBytes();
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, targetAddress, TARGET_PORT);
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, targetAddress, targetPort);
             socket.send(sendPacket);
 //            System.out.println("Sent: " + message);
 //            Thread.sleep(delay); // Just to be safe XD

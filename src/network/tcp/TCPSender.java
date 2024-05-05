@@ -53,10 +53,9 @@ public class TCPSender {
                     outToServer.println(data);
 
                     System.out.println("Packet " + i);
-                    Thread.sleep(500);
                 }
                 System.out.println("Finished! Press 'q' to exit.");
-            } catch (IOException | InterruptedException e) {
+            } catch (IOException e) {
                 System.out.println("Within \"start\" method, TCP.java: " + e.getMessage());
                 logger.log(Level.SEVERE, "Error within the TCPSender \"start()\" thread ", e);
                 System.out.println("Implement a proper error handling procedure. E.g (If error occurred -> ask user if he wants to retry connection.)");

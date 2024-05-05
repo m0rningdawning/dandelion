@@ -1,23 +1,20 @@
-package network;
+package network.udp;
 
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class UDPMockReceiver {
-    private static final int PORT = 8888;
+    private static final int port = 9999;
 
     public static void main(String[] args) {
         DatagramSocket socket = null;
 //        ArrayList<String> address = new ArrayList<>();
 
         try {
-            socket = new DatagramSocket(PORT);
-            System.out.println("UDP Receiver is running on port " + PORT);
+            socket = new DatagramSocket(port);
+            System.out.println("UDP Receiver is running on port " + port);
 
             byte[] receiveData = new byte[1024];
             DatagramPacket receivePacket;
