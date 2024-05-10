@@ -62,7 +62,7 @@ public class Main {
                     if (input.trim().matches("[1-3]")) {
                         switch (input) {
                             case "1":
-                                udpSender = new UDPSender(8888, 9999, 100000, 50, 30);
+                                udpSender = new UDPSender(8888, 9999, 100000, 1000, 30);
                                 break;
                             case "2":
                                 tcpSender = new TCPSender();

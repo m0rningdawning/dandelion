@@ -62,6 +62,7 @@ public class SYNSender {
 
     private void initializeThreadPool() {
         executor = Executors.newFixedThreadPool(threadCount);
+        latch = new CountDownLatch(threadCount);
 
         // Same situation here as in UDPSender
         for (int i = 0; i < threadCount; i++)
