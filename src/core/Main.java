@@ -4,8 +4,10 @@ package core;
 TODO
 - Implement UDP/IP protocol
 - Implement TCP/IP protocol
-- Try to implement SYN Attack
+- Spoof TCP Headers (Maybe UDP as well)
 - Implement FTP protocol
+- Add proper loggers everywhere
+- Refactor and fix bugs
  */
 
 import network.syn.SYNSender;

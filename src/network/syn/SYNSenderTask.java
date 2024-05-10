@@ -1,16 +1,16 @@
 package network.syn;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 import network.udp.UDPSenderTask;
 
-import java.io.IOException;
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.util.Random;
@@ -54,7 +54,11 @@ public class SYNSenderTask implements Runnable {
             long currentTime = System.nanoTime();
             long elapsedTime = currentTime - lastPacketTime;
             if (elapsedTime >= 0) {
-                send();
+                try {
+                    send();
+                } catch (UnknownHostException e) {
+                    throw new RuntimeException(e);
+                }
                 lastPacketTime = currentTime;
             }
 
@@ -84,6 +88,8 @@ public class SYNSenderTask implements Runnable {
     private int getRandom(int min, int max) {
         return new Random().nextInt(max - min + 1) + min;
     }
+
+    // NOT WORKING SYN PACKET BUILDUP (MORE RESEARCH NEEDED)
 
     public static byte[] buildSYNPacket(InetAddress sourceIP, InetAddress destIP, int sourcePort, int destPort) throws UnknownHostException {
         // TCP header size is 20 bytes
@@ -122,13 +128,10 @@ public class SYNSenderTask implements Runnable {
         pseudoHeader[9] = 6; // Protocol (TCP)
         ByteBuffer.wrap(pseudoHeader, 10, 2).putShort((short) tcpHeader.length); // TCP Length
 
-        // Calculate Checksum
         short checksum = calculateChecksum(pseudoHeader, tcpHeader);
 
-        // Update Checksum in TCP Header
         ByteBuffer.wrap(tcpHeader, 16, 2).putShort(checksum);
 
-        // Concatenate TCP Header with data (if any)
         byte[] packet = new byte[tcpHeader.length];
         System.arraycopy(tcpHeader, 0, packet, 0, tcpHeader.length);
 
@@ -143,7 +146,6 @@ public class SYNSenderTask implements Runnable {
         int sum = 0;
         int length = sumBytes.length;
 
-        // Sum up 16-bit words
         for (int i = 0; i < length - 1; i += 2) {
             int word = ((sumBytes[i] << 8) & 0xFF00) + (sumBytes[i + 1] & 0xFF);
             sum += word;
@@ -153,7 +155,6 @@ public class SYNSenderTask implements Runnable {
             }
         }
 
-        // Add any remaining byte
         if (length % 2 != 0) {
             sum += (sumBytes[length - 1] << 8 & 0xFF00);
             if ((sum & 0xFFFF0000) > 0) {
@@ -162,7 +163,7 @@ public class SYNSenderTask implements Runnable {
             }
         }
 
-        // Take the one's complement of sum
+        // one's complement
         sum = ~sum;
         sum = sum & 0xFFFF;
         return (short) sum;
@@ -176,28 +177,49 @@ public class SYNSenderTask implements Runnable {
         return sb.toString().trim();
     }
 
-    private void send() {
-        try (DatagramSocket socket = new DatagramSocket()) {
-            // Yep, still local...
-            InetAddress sourceIP = InetAddress.getByName(addresses[new Random().nextInt(amountOfAddresses)]);
-            InetAddress destIP = InetAddress.getLocalHost();
+    private void send() throws UnknownHostException {
+//        try (DatagramSocket socket = new DatagramSocket()) {
+//            // Yep, still local...
+//            InetAddress sourceIP = InetAddress.getByName(addresses[new Random().nextInt(amountOfAddresses)]);
+//            InetAddress destIP = InetAddress.getLocalHost();
+//
+//            int minSpoofedPort = 49152, maxSpoofedPort = 65535;
+//            int sourcePort = getRandom(minSpoofedPort, maxSpoofedPort);
+//
+//            byte[] synPacket = buildSYNPacket(sourceIP, destIP, sourcePort, targetPort);
+//            System.out.println("TCP SYN Packet: " + bytesToHex(synPacket));
+//
+//            // Sending starts here
+//
+//            DatagramPacket datagramPacket = new DatagramPacket(synPacket, synPacket.length, destIP, targetPort); // Destination port will be ignored
+//            socket.send(datagramPacket);
+//
+//            System.out.println("Packet sent.");
 
-            int minSpoofedPort = 49152, maxSpoofedPort = 65535;
-            int sourcePort = getRandom(minSpoofedPort, maxSpoofedPort);
+        InetAddress destIP = InetAddress.getLocalHost();
+        EventLoopGroup group = new NioEventLoopGroup();
 
-            byte[] synPacket = buildSYNPacket(sourceIP, destIP, sourcePort, targetPort);
-            System.out.println("TCP SYN Packet: " + bytesToHex(synPacket));
+        try {
+            Bootstrap b = new Bootstrap();
+            b.group(group)
+                    .channel(NioSocketChannel.class)
+                    .handler(new LoggingHandler(LogLevel.INFO))
+                    .handler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        public void initChannel(SocketChannel ch) {}
+                    });
 
-            // Sending starts here
+            ChannelFuture f = b.connect(destIP, targetPort);
+            f.sync(); // Blocking the channel
+            f.channel().close(); // Closing right after the SYN
 
-            DatagramPacket datagramPacket = new DatagramPacket(synPacket, synPacket.length, destIP, targetPort); // Destination port will be ignored
-            socket.send(datagramPacket);
-
-            System.out.println("Packet sent.");
-        } catch (IOException e) {
+            System.out.println("TCP SYN flood packet sent successfully.");
+        } catch (InterruptedException e) {
             System.out.println("Within \"send\" method, SYNSenderTask.java: " + e.getMessage());
             logger.log(Level.SEVERE, "Within \"send\" method, SYNSenderTask.java: ", e);
             System.out.println("Implement a proper error handling procedure. E.g (If error occurred -> ask user if he wants to retry connection.)");
+        } finally {
+            group.shutdownGracefully();
         }
     }
 }
