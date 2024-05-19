@@ -5,11 +5,13 @@ TODO
 - Implement UDP/IP protocol
 - Implement TCP/IP protocol
 - Spoof TCP Headers (Maybe UDP as well)
-- Implement FTP protocol
+- Implement HTTP protocol XD
+- Add user input
 - Add proper loggers everywhere
 - Refactor and fix bugs
  */
 
+import network.http.HTTPSender;
 import network.syn.SYNSender;
 import network.tcp.TCPSender;
 import network.udp.UDPSender;
@@ -24,7 +26,7 @@ public class Main {
     private UDPSender udpSender;
     private TCPSender tcpSender;
     private SYNSender synSender;
-//    private FTP ftp;
+    private HTTPSender httpSender;
 
     private static final Logger logger = Logger.getLogger(Main.class.getName());
 
@@ -51,7 +53,7 @@ public class Main {
                 "1 - UDP/IP Resource exhaustion.\n" +
                 "2 - TCP/IP Test.\n" +
                 "3 - SYN Flood.\n" +
-                "4 - FTP(WIP)");
+                "4 - HTTP Flood");
         System.out.println("Choose the protocol: ");
     }
 
@@ -61,7 +63,7 @@ public class Main {
             try {
                 while (true) {
                     String input = reader.readLine();
-                    if (input.trim().matches("[1-3]")) {
+                    if (input.trim().matches("[1-4]")) {
                         switch (input) {
                             case "1":
                                 udpSender = new UDPSender(8888, 9999, 100000, 1000, 30);
@@ -73,9 +75,8 @@ public class Main {
                                 synSender = new SYNSender(8888, 9999, 20, 50, 30);
                                 break;
                             case "4":
-                                System.out.println("This one is unimplemented, choose other.");
+                                httpSender = new HTTPSender(9999, 1000, 30);
                                 break;
-
                             default:
                                 if (udpSender != null) {
                                     udpSender.stop();
@@ -86,11 +87,10 @@ public class Main {
                                 } else if (synSender != null) {
                                     synSender.stop();
                                     synSender = null;
+                                } else if (httpSender != null) {
+                                    httpSender.stop();
+                                    httpSender = null;
                                 }
-//                    else if (ftp != null){
-//                        ftp.stop();
-//                        ftp = null;
-//                    }
                                 break;
                         }
                         break;
